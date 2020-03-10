@@ -1,0 +1,10 @@
+name: dartyaml
+maintainer: Romit Karmakar (@romitkarmakar)
+description: dart-yaml helps to modify, read and dump yaml files.
+homepage: https://github.com/romitkarmakar/dart-yaml
+version: 1.0.0+0
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dev_dependencies:
