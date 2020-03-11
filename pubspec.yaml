@@ -1,3 +1,4 @@
+# Pubspec file
 name: dartyaml
 maintainer: Romit Karmakar (@romitkarmakar)
 description: dart-yaml helps to modify, read and dump yaml files.
@@ -8,3 +9,4 @@ environment:
   sdk: '>=2.0.0 <3.0.0'
 
 dev_dependencies:
+  test: ^1.14.2
