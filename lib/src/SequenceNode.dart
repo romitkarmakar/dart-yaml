@@ -1,16 +1,15 @@
 import "Node.dart";
 
 class SequenceNode extends Node {
-  String key;
   List<String> value;
   SequenceNode() {
     value = <String>[];
   }
   @override
   String toString() {
-    String temp = "${Node.generateIndentation(0)}$key: \n";
+    String temp = "\n";
     value.forEach((f) {
-      temp += "${Node.generateIndentation(1)} - $f \n";
+      temp += "${Node.generateIndentation(level)}- $f \n";
     });
 
     return temp;

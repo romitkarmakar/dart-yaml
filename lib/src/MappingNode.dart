@@ -1,26 +1,19 @@
 import "Node.dart";
 
 class MappingNode extends Node {
-  String key;
-  List<Node> value;
+  Map<String, dynamic> value;
 
   MappingNode() {
-    value = <Node>[];
+    value = Map();
   }
 
   @override
   String toString() {
     String temp = "";
-    if (!isRoot) {
-      temp = "${Node.generateIndentation(0)}$key: \n";
-      value.forEach((f) {
-        temp += "${Node.generateIndentation(1)}$f";
-      });
-    } else {
-      value.forEach((f) {
-        temp += "${Node.generateIndentation(0)}$f";
-      });
-    }
+    value.forEach((k, v) {
+      temp += "\n${Node.generateIndentation(level)}$k: $v";
+    });
+
     return temp;
   }
 }

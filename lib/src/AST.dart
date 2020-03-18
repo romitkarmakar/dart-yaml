@@ -2,6 +2,8 @@ import 'package:dartyaml/src/MappingNode.dart';
 import 'package:dartyaml/src/ScalarNode.dart';
 import 'package:dartyaml/src/SequenceNode.dart';
 
+import 'Node.dart';
+
 /// This class helps to generate the Abstract Syntax Tree from the yaml to easily work with the YAML file.
 
 class TreeNode {
@@ -11,6 +13,7 @@ class TreeNode {
   List<TreeNode> children;
 
   TreeNode() {
+    level = 0;
     isArr = false;
     children = <TreeNode>[];
   }
@@ -19,9 +22,12 @@ class TreeNode {
 class AST {
   TreeNode root;
   Map<int, String> comments;
+  int commentIndex;
 
   AST() {
+    commentIndex = 0;
     root = TreeNode();
+    root.value = "root";
     comments = new Map();
   }
 
@@ -55,9 +61,9 @@ class AST {
   }
 
   // Inputs a line and genrate a node for the tree.
-  bool addNode(int index, String line) {
+  bool addNode(String line) {
+    commentIndex++;
     if (line.length == 0) return false;
-
     // Move pointer to required child
     TreeNode temp = TreeNode();
     temp.level = getIndentationLevel(line);
@@ -70,7 +76,10 @@ class AST {
     // Add comments to comments array.
     line = line.trim();
     if (line.length == 0) {
-      if (comment != null) comments[index] = comment;
+      if (comment != null)
+        comments[commentIndex] = comment;
+      else
+        comments[commentIndex] = "\n";
       return false;
     }
 
@@ -94,7 +103,7 @@ class AST {
 
   /// Print all the nodes in the tree.
   static void iterateTree(TreeNode pointer) {
-    print(pointer.value);
+    print("${Node.generateIndentation(pointer.level)}${pointer.value}");
     pointer.children.forEach((f) => iterateTree(f));
   }
 
@@ -110,26 +119,34 @@ class AST {
   }
 
   /// Generates a map from the AST.
-  static dynamic treeToMap(TreeNode root) {
+  static dynamic treeToMap(dynamic result, TreeNode root) {
     if (root.children.length > 0) {
       if (root.isArr) {
-        SequenceNode temp = SequenceNode();
-        temp.key = root.value;
-        root.children.forEach((f) => temp.value.add(f.value));
-        return temp;
+        List<String> arr = root.value.split(':');
+        result.value[arr[0]] = SequenceNode();
+        result.value[arr[0]].level = root.level;
+        root.children.forEach((f) {
+          result.value[arr[0]].value.add(f);
+        });
+
+        return result;
       } else {
-        MappingNode temp = MappingNode();
-        temp.key = root.value;
-        root.children.forEach((f) => temp.value.add(treeToMap(f)));
-        return temp;
+        List<String> arr = root.value.split(':');
+        result.value[arr[0]] = MappingNode();
+        result.value[arr[0]].level = root.level;
+        root.children.forEach((f) {
+          result.value[arr[0]] = treeToMap(result.value[arr[0]], f);
+        });
+
+        return result;
       }
     } else {
-      ScalarNode temp = ScalarNode();
-      List<String> arr = root.value.split(":");
-      temp.key = arr[0];
-      temp.value = arr[1];
+      List<String> arr = root.value.split(':');
+      result.value[arr[0]] = ScalarNode();
+      result.level = root.level;
+      result.value[arr[0]].value = arr[1];
 
-      return temp;
+      return result;
     }
   }
 }
