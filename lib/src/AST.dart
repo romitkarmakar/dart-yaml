@@ -25,18 +25,21 @@ class AST {
     comments = new Map();
   }
 
+  /// Returns whether the string contains comment or not.
   bool isComment(String line) {
     line = line.trim();
     final regex = RegExp(r'#.*');
     return regex.hasMatch(line) ? true : false;
   }
 
+  /// Removes all the comment from the line.
   String removeComments(String line) {
     return line.replaceAllMapped(RegExp(r'#.*'), (match) {
       return '';
     });
   }
 
+  /// Returns the tree level for the line.
   int getIndentationLevel(String line) {
     int i = 0;
     while (line[i] == " ") {
@@ -45,11 +48,13 @@ class AST {
     return (i / 2).round();
   }
 
+  /// Move the pointer to required tree level.
   static TreeNode movePointer(TreeNode root, int level) {
     if (level == 0) return root;
     return movePointer(root.children[root.children.length - 1], level - 1);
   }
 
+  // Inputs a line and genrate a node for the tree.
   bool addNode(int index, String line) {
     if (line.length == 0) return false;
 
@@ -87,11 +92,13 @@ class AST {
     }
   }
 
+  /// Print all the nodes in the tree.
   static void iterateTree(TreeNode pointer) {
     print(pointer.value);
     pointer.children.forEach((f) => iterateTree(f));
   }
 
+  /// Inject comments in the final string generated from ast.
   String injectComments(String data) {
     List<String> arr = data.split("\n");
     comments.forEach((k, v) {
@@ -102,6 +109,7 @@ class AST {
     return data;
   }
 
+  /// Generates a map from the AST.
   static dynamic treeToMap(TreeNode root) {
     if (root.children.length > 0) {
       if (root.isArr) {
